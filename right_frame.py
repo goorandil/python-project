@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import csv
@@ -12,7 +13,7 @@ class RightFrame(tk.Frame):
         super().__init__(parent)
 
         # Create a text title label
-        title_label = tk.Label(self, text="Brainwave Monitoring - Naira - versi 0.2", font=("Arial", 15))
+        title_label = tk.Label(self, text="Brainwave Monitoring System - Naira - versi 0.2", font=("Arial", 15))
         title_label.pack(pady=0)
 
 
@@ -62,20 +63,40 @@ class RightFrame(tk.Frame):
       
    
     
-    def update_plot_list(self, csv_files):
+    def update_plot_list(self):
           # Create a listbox to display the CSV filenames
-        self.csv_listbox.pack()
-        self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
-        self.csv_listbox.delete(0, tk.END)
+          
+        if not self.csv_listbox.winfo_ismapped():
+            self.csv_listbox.pack()
+            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+            self.csv_listbox.delete(0, tk.END)
         
-        
+            folder_path = "respondent"  # Specify the folder path
+            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+      
        
         # Add the CSV filenames to the listbox
-        for file in csv_files:
-            self.csv_listbox.insert(tk.END, file)
+            for file in csv_files:
+                self.csv_listbox.insert(tk.END, file)
  
-        self.plot_frame.pack(fill="both", expand=True)
+            self.plot_frame.pack(fill="both", expand=True)
    
+        else:
+            self.csv_listbox.pack()
+            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+            self.csv_listbox.delete(0, tk.END)
+        
+            folder_path = "respondent"  # Specify the folder path
+            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+      
+       
+        # Add the CSV filenames to the listbox
+            for file in csv_files:
+                self.csv_listbox.insert(tk.END, file)
+ 
+            self.plot_frame.pack_forget()
+            self.clear_plot()
+      
         self.fig, self.ax = plt.subplots()
         self.plot_canvas = None
        
@@ -85,7 +106,7 @@ class RightFrame(tk.Frame):
     
     def show_selected_data(self, event):
             # Get the selected filename from the listbox
-            
+            self.plot_frame.pack(fill="both", expand=True)
             selected_index = self.csv_listbox.curselection()
             if selected_index:
                 selected_file = self.csv_listbox.get(selected_index)

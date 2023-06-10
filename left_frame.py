@@ -226,32 +226,14 @@ class LeftFrame(tk.Frame):
         csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
         self.right_frame.update_csv_list(csv_files)
         
-        if csv_files:
-            print("CSV Files:")
-            for file in csv_files:
-                print(file)
-        else:
-            print("No CSV files found in the folder.")
-
-     
-
+       
         self.right_frame.text_widget.pack_forget()
       
 
     def show_plot(self):
-       
-       
-        folder_path = "respondent"  # Specify the folder path
-        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-        self.right_frame.update_plot_list(csv_files)
-        
-        if csv_files:
-            print("CSV Files:")
-            for file in csv_files:
-                print(file)
-        else:
-            print("No CSV files found in the folder.")            
-
+        self.right_frame.plot_frame.pack_forget()
+            
+        self.right_frame.update_plot_list()
         self.right_frame.text_widget.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
       

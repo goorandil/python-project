@@ -36,12 +36,45 @@ class RightFrame(tk.Frame):
         self.csv_treeview = ttk.Treeview(self.treeview_frame, show="headings")
         self.treeview_frame.visible = False
       
-    
+      # Create a frame for the Treeview and scrollbar
+        self.dataset_frame = tk.Frame(self,width=50)
+        self.dataset_treeview = ttk.Treeview(self.dataset_frame, show="headings")
+        self.dataset_frame.visible = False
+ 
   # Create a frame for the plot canvas
         self.plot_frame = tk.Frame(self,width=300)
         self.plot_frame.visible = False
       
+    
+    
+    def update_dataset_list(self):
+    
+# Create the Treeview widget
+        self.dataset_frame.pack(fill="both", expand=True)
+        self.dataset_treeview.pack(fill="both", expand=True, pady=(0, 2))
         
+        selected_file = "combined_group_sum_averages.csv"
+
+                # Clear the treeview
+        self.dataset_treeview.delete(*self.dataset_treeview.get_children())
+
+                # Read and display the CSV data in the treeview
+        with open('D:\\python-project\\dataset\\' + selected_file, 'r') as file:
+                    # Process the file
+            csv_reader = csv.reader(file)
+            headers = next(csv_reader)
+            self.dataset_treeview['columns'] = headers
+            self.dataset_treeview.heading("#0", text="Row")
+            for header in headers:
+                self.dataset_treeview.heading(header, text=header)
+                self.dataset_treeview.column(header, width=100)
+                row_number = 1
+                for row in csv_reader:
+                    self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
+                    row_number += 1
+
+   
+         
   
     def update_csv_list(self, csv_files):
        

@@ -1,6 +1,7 @@
 import configparser
 import csv
 import datetime
+import subprocess
 import tkinter as tk
 from tkinter import messagebox
 import tkinter.ttk as ttk
@@ -62,19 +63,32 @@ class LeftFrame(tk.Frame):
         separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
         separator2.pack(fill="x", pady=5, padx=5)
    
-   # Create the show CSV button
+     # Create the show CSV button
+        show_plot_button = tk.Button(self, text="Show Plot", command=self.show_plot,font=("Arial", fontsize))
+        show_plot_button.pack(pady=10)
+ 
+ # Create the show CSV button
         show_csv_button = tk.Button(self, text="Show Data CSV", command=self.show_csv,font=("Arial", fontsize))
         show_csv_button.pack(pady=10)
 
-   # Create the show CSV button
-        show_plot_button = tk.Button(self, text="Show Plot", command=self.show_plot,font=("Arial", fontsize))
-        show_plot_button.pack(pady=10)
 
      # Create a separator line
         separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
         separator2.pack(fill="x", pady=5, padx=5)
    
     
+      # Create the start record button
+        self.dataset_button = tk.Button(self, text="Show Dataset", command=self.show_dataset,font=("Arial", fontsize))
+        self.dataset_button.pack(pady=10, anchor='center')
+ 
+    # Create the start record button
+        self.addlabel_button = tk.Button(self, text="Add Label", command=self.open_dataset_file,font=("Arial", fontsize))
+        self.addlabel_button.pack(pady=10, anchor='center')
+ 
+   # Create a separator line
+        separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
+        separator2.pack(fill="x", pady=5, padx=5)
+   
         # Create the exit button
         exit_button = tk.Button(self, text="Exit", command=self.exit_app,font=("Arial", fontsize))
         exit_button.pack(pady=10)
@@ -128,6 +142,16 @@ class LeftFrame(tk.Frame):
             config_text.insert(tk.END, config_content)
 
   
+    def open_dataset_file(self):
+        folder_pathdata = "D:\python-project\dataset"  # Specify the folder path
+      
+        csv_file = folder_pathdata+ "\combined_group_sum_averages.csv"
+        text_editor_cmd = ["notepad", csv_file]  # Replace "notepad" with your desired text editor program
+
+        try:
+            subprocess.run(text_editor_cmd)
+        except FileNotFoundError:
+            print(f"Unable to open file '{csv_file}' with the specified text editor.")
 
     
     def connect_serial(self):
@@ -151,6 +175,7 @@ class LeftFrame(tk.Frame):
         self.right_frame.text_widget.pack(fill='both', expand=True)
         self.right_frame.csv_listbox.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.dataset_frame.pack_forget()
         self.right_frame.plot_frame.pack_forget()
       
 
@@ -213,7 +238,8 @@ class LeftFrame(tk.Frame):
         self.right_frame.csv_listbox.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.plot_frame.pack_forget()
-     
+        self.right_frame.dataset_frame.pack_forget()
+      
 
     def exit_app(self):
         self.master.destroy()
@@ -228,6 +254,7 @@ class LeftFrame(tk.Frame):
         
        
         self.right_frame.text_widget.pack_forget()
+        self.right_frame.dataset_frame.pack_forget()
       
 
     def show_plot(self):
@@ -236,5 +263,50 @@ class LeftFrame(tk.Frame):
         self.right_frame.update_plot_list()
         self.right_frame.text_widget.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.dataset_frame.pack_forget()
       
-      
+    def show_dataset(self):
+        folder_path = "respondent"  # Specify the folder path
+        folder_pathdata = "dataset"  # Specify the folder path
+        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+
+        # List to store the group sum averages for each CSV file
+        all_group_sum_averages = []
+
+        # Iterate over each CSV file
+        for file in csv_files:
+            print(file)
+            data_values = []
+
+            # Read the "Data" column from the current CSV file and append to data_values
+            with open(os.path.join(folder_path, file), "r") as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    data_values.append(int(row["Data"]))
+
+            # Divide the data_values into four groups
+            group_size = 120
+            groups = [data_values[i:i+group_size] for i in range(0, len(data_values), group_size)]
+
+            # Calculate the sum average for each group
+            group_sum_averages = [sum(group) / group_size for group in groups]
+
+            print(group_sum_averages)
+            all_group_sum_averages.append(group_sum_averages)
+
+        # Save the all_group_sum_averages to a combined CSV file
+        output_file = "combined_group_sum_averages.csv"
+
+        with open(os.path.join(folder_pathdata, output_file), "w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            # Write the header row
+            writer.writerow(["Baseline","Soal","Membaca"])
+            # Write the data rows
+            writer.writerows(all_group_sum_averages)
+ 
+        self.right_frame.update_dataset_list()
+        self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.plot_frame.pack_forget()
+        self.right_frame.text_widget.pack_forget()
+        

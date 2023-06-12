@@ -182,29 +182,35 @@ class RightFrame(tk.Frame):
             self.csv_listbox.pack()
             self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
             self.csv_listbox.delete(0, tk.END)
+        
             folder_path = "respondent"  # Specify the folder path
             csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
     
         # Add the CSV filenames to the listbox
             for file in csv_files:
                 self.csv_listbox.insert(tk.END, file)
-                self.plot_frame.pack(fill="both", expand=True)
-            else:
-                self.csv_listbox.pack()
-                self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
-                self.csv_listbox.delete(0, tk.END)
-                folder_path = "respondent"  # Specify the folder path
-                csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+            
+            self.plot_frame.pack(fill="both", expand=True)
+        else:
+            self.csv_listbox.pack()
+            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+            self.csv_listbox.delete(0, tk.END)
+            
+            folder_path = "respondent"  # Specify the folder path
+            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
       
         # Add the CSV filenames to the listbox
-        for file in csv_files:
-            self.csv_listbox.insert(tk.END, file)
+            for file in csv_files:
+                self.csv_listbox.insert(tk.END, file)
+                
             self.plot_frame.pack_forget()
             self.clear_plot()
-            self.fig, self.ax = plt.subplots()
-            self.plot_canvas = None 
-            self.text_widget.pack_forget()
-            self.treeview_frame.pack_forget()
+        
+        self.fig, self.ax = plt.subplots()
+        self.plot_canvas = None 
+        
+        self.text_widget.pack_forget()
+        self.treeview_frame.pack_forget()
 
     def show_selected_data(self, event):
             # Get the selected filename from the listbox
@@ -231,10 +237,10 @@ class RightFrame(tk.Frame):
                         self.csv_treeview.insert("", "end", text=str(row_number), values=row)
                         row_number += 1
                 
-                self.clear_plot()
+            self.clear_plot()
 
                 # Plot the data from the CSV file
-                self.plot_csv_data(selected_file)
+            self.plot_csv_data(selected_file)
 
     def show_selected_average(self,event):
             # Get the selected filename from the listbox

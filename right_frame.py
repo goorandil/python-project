@@ -23,9 +23,17 @@ class RightFrame(tk.Frame):
         self.csv_listbox = tk.Listbox(self, height=5, font=("Arial", 10))
         self.csv_listbox.visible = False
        
+        # Create a listbox to display the CSV filenames
+        self.csv_listbox2 = tk.Listbox(self, height=5, font=("Arial", 10))
+        self.csv_listbox2.visible = False
+     
+# Create a text title label
+        self.average_label = tk.Label(self,text='yelo', font=("Arial", 10))
+       
+ 
         # Configure the grid to expand the listbox when the window is resized
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+      #  self.grid_rowconfigure(1, weight=1)
+       # self.grid_columnconfigure(2, weight=1)
 
         # Create a frame for the Treeview and scrollbar
         self.treeview_frame = tk.Frame(self,width=50)
@@ -41,6 +49,8 @@ class RightFrame(tk.Frame):
         self.plot_frame = tk.Frame(self,width=300)
         self.plot_frame.visible = False
       
+
+
     def update_dataset_list(self):
         folder_path = "respondent"  # Specify the folder path
         folder_pathdataset = "dataset"  # Specify the folder path
@@ -149,18 +159,26 @@ class RightFrame(tk.Frame):
         nearest_feature = labels[nearest_feature_index]
 
         # print(f"The nearest feature to {input_value} is '{nearest_feature}'")
+        
+        
         # data baru
         unseen_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-        self.csv_listbox.pack()
-        self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_average)
-        self.csv_listbox.delete(0, tk.END)
+        self.csv_listbox2.pack(side=tk.LEFT)
+        
+        self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_average)
+        self.csv_listbox2.delete(0, tk.END)
         
         # Add the CSV filenames to the listbox
         for file in unseen_files:
-            self.csv_listbox.insert(tk.END, file) 
+            self.csv_listbox2.insert(tk.END, file) 
         
-    def update_csv_list(self, csv_files):
 
+
+
+    def update_csv_list(self):
+        folder_path = "respondent"  # Specify the folder path
+        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+      
             # Clear the listbox
         self.csv_listbox.pack()
         self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
@@ -173,32 +191,41 @@ class RightFrame(tk.Frame):
         # Create the Treeview widget
         self.treeview_frame.pack(fill="both", expand=True)
         self.csv_treeview.pack(fill="both", expand=True, pady=(0, 2))
+        
         self.text_widget.pack_forget()
         self.plot_frame.pack_forget()
     
     def update_plot_list(self):
         # Create a listbox to display the CSV filenames
+        folder_path = "respondent"  # Specify the folder path
+        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+       
         if not self.csv_listbox.winfo_ismapped():
+            
+              
             self.csv_listbox.pack()
-            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_plot)
             self.csv_listbox.delete(0, tk.END)
         
-            folder_path = "respondent"  # Specify the folder path
-            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-    
+           
         # Add the CSV filenames to the listbox
             for file in csv_files:
                 self.csv_listbox.insert(tk.END, file)
             
             self.plot_frame.pack(fill="both", expand=True)
+            
+            self.text_widget.pack_forget()
+            self.treeview_frame.pack_forget()
+            self.csv_treeview.pack_forget()
+        
+        
+        
         else:
             self.csv_listbox.pack()
-            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_plot)
             self.csv_listbox.delete(0, tk.END)
             
-            folder_path = "respondent"  # Specify the folder path
-            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-      
+        
         # Add the CSV filenames to the listbox
             for file in csv_files:
                 self.csv_listbox.insert(tk.END, file)
@@ -214,7 +241,6 @@ class RightFrame(tk.Frame):
 
     def show_selected_data(self, event):
             # Get the selected filename from the listbox
-        self.plot_frame.pack(fill="both", expand=True)
         selected_index = self.csv_listbox.curselection()
         if selected_index:
             selected_file = self.csv_listbox.get(selected_index)
@@ -237,8 +263,15 @@ class RightFrame(tk.Frame):
                         self.csv_treeview.insert("", "end", text=str(row_number), values=row)
                         row_number += 1
                 
+        
+    def show_selected_plot(self, event):
+            # Get the selected filename from the listbox
+        self.plot_frame.pack(fill="both", expand=True)
+        selected_index = self.csv_listbox.curselection()
+        if selected_index:
+            selected_file = self.csv_listbox.get(selected_index)
+                
             self.clear_plot()
-
                 # Plot the data from the CSV file
             self.plot_csv_data(selected_file)
 
@@ -246,9 +279,13 @@ class RightFrame(tk.Frame):
             # Get the selected filename from the listbox
         folder_pathdataset = "dataset"  # Specify the folder path
         folder_path = "respondent"  # Specify the folder path
-        selected_index = self.csv_listbox.curselection()
+      
+      
+       
+        selected_index = self.csv_listbox2.curselection()
+         
         if selected_index:
-            selected_file = self.csv_listbox.get(selected_index)
+            selected_file = self.csv_listbox2.get(selected_index)
             print(selected_file)
             
             # mulai average 
@@ -310,21 +347,25 @@ class RightFrame(tk.Frame):
                 print('Average Data Test = ', all_group_sum_averages[0]) 
                 labels = ["Baseline", "Soal", "Membaca"]
 
-                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][0])
-                nearest_feature_index = np.argmin(distances)
-                nearest_feature = labels[nearest_feature_index]
-                print(f"The nearest feature to {all_group_sum_averages[0][0]} is '{nearest_feature}'")
+                distances0 = np.abs(np.array(column_averages) - all_group_sum_averages[0][0])
+                nearest_feature_index0 = np.argmin(distances0)
+                nearest_feature0 = labels[nearest_feature_index0]
+                print(f"The nearest feature to {all_group_sum_averages[0][0]} is '{nearest_feature0}'")
 
-                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][1])
-                nearest_feature_index = np.argmin(distances)
-                nearest_feature = labels[nearest_feature_index]
-                print(f"The nearest feature to {all_group_sum_averages[0][1]} is '{nearest_feature}'")
+                distances1 = np.abs(np.array(column_averages) - all_group_sum_averages[0][1])
+                nearest_feature_index1 = np.argmin(distances1)
+                nearest_feature1 = labels[nearest_feature_index1]
+                print(f"The nearest feature to {all_group_sum_averages[0][1]} is '{nearest_feature1}'")
   
                 distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][2])
                 nearest_feature_index = np.argmin(distances)
                 nearest_feature = labels[nearest_feature_index]
                 print(f"The nearest feature to {all_group_sum_averages[0][2]} is '{nearest_feature}'")
    
+                self.average_label.config(text=f"{labels}\nAverage Dataset {column_averages}\nAverage Data Test {all_group_sum_averages[0]}\nThe nearest feature to {all_group_sum_averages[0][1]} is {nearest_feature0} \nThe nearest feature to {all_group_sum_averages[0][1]} is {nearest_feature1}")
+                self.average_label.pack(side=tk.LEFT)
+      
+
     def clear_plot(self):
         # Clear the previous plot
         if self.plot_canvas:

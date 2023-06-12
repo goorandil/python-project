@@ -201,7 +201,7 @@ class LeftFrame(tk.Frame):
         y = data["Target"]
 
         # Split the dataset into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=126)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=15)
 
         # Create an SVM classifier object
         clf = svm.SVC()

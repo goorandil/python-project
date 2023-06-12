@@ -29,7 +29,8 @@ class RightFrame(tk.Frame):
      
 # Create a text title label
         self.average_label = tk.Label(self,text='yelo', font=("Arial", 10))
-       
+        self.average_label.visible = False
+     
  
         # Configure the grid to expand the listbox when the window is resized
       #  self.grid_rowconfigure(1, weight=1)
@@ -173,6 +174,43 @@ class RightFrame(tk.Frame):
             self.csv_listbox2.insert(tk.END, file) 
         
 
+    def train_dataset_list(self,data,accuracy):
+
+        print(data)
+        print("Accuracy:", accuracy)
+
+        folder_pathdataset = "dataset"  # Specify the folder path
+        selected_file = "combined_group_sum_averages_labeled.csv"
+
+       
+         # Create the Treeview widget
+        self.dataset_frame.pack(fill="both", expand=True)
+        self.dataset_treeview.pack(fill="both", expand=True, pady=(0, 2))
+        
+        # Clear the treeview
+        self.dataset_treeview.delete(*self.dataset_treeview.get_children())
+
+        # Read and display the CSV data in the treeview
+        with open(os.path.join(folder_pathdataset, selected_file), "r") as csv_file:
+        
+            # Process the file
+            csv_reader = csv.reader(csv_file)
+            headers = next(csv_reader)
+            self.dataset_treeview['columns'] = headers
+            self.dataset_treeview.heading("#0", text="Row")      
+            for header in headers:
+                self.dataset_treeview.heading(header, text=header)
+                self.dataset_treeview.column(header, width=100)
+                row_number = 1
+            for row in csv_reader:
+                self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
+                row_number += 1
+            
+        self.average_label.config(text=f"Accuracy : {accuracy}\nSVM Classification Mode saved at model folder", 
+                          font=("Arial", 12), padx=10, pady=10)
+        self.average_label.pack(side=tk.LEFT)
+      
+               
 
 
     def update_csv_list(self):
@@ -357,12 +395,14 @@ class RightFrame(tk.Frame):
                 nearest_feature1 = labels[nearest_feature_index1]
                 print(f"The nearest feature to {all_group_sum_averages[0][1]} is '{nearest_feature1}'")
   
-                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][2])
-                nearest_feature_index = np.argmin(distances)
-                nearest_feature = labels[nearest_feature_index]
-                print(f"The nearest feature to {all_group_sum_averages[0][2]} is '{nearest_feature}'")
+                distances2 = np.abs(np.array(column_averages) - all_group_sum_averages[0][2])
+                nearest_feature_index2 = np.argmin(distances2)
+                nearest_feature2 = labels[nearest_feature_index2]
+               
+                print(f"The nearest feature to {all_group_sum_averages[0][2]} is '{nearest_feature2}'")
    
-                self.average_label.config(text=f"{labels}\nAverage Dataset {column_averages}\nAverage Data Test {all_group_sum_averages[0]}\nThe nearest feature to {all_group_sum_averages[0][1]} is {nearest_feature0} \nThe nearest feature to {all_group_sum_averages[0][1]} is {nearest_feature1}")
+                self.average_label.config(text=f"{labels}\nAverage Dataset {column_averages}\nAverage Data Test {all_group_sum_averages[0]}\nThe nearest feature to {all_group_sum_averages[0][0]} is {nearest_feature0} \nThe nearest feature to {all_group_sum_averages[0][1]} is {nearest_feature1}\nThe nearest feature to {all_group_sum_averages[0][2]} is {nearest_feature2}", 
+                          font=("Arial", 12), padx=10, pady=10)
                 self.average_label.pack(side=tk.LEFT)
       
 

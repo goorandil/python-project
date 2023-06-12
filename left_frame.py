@@ -194,8 +194,7 @@ class LeftFrame(tk.Frame):
      
          # Load the labeled dataset
         data = pd.read_csv(folder_pathdata)
-        print(data)
-
+        
         # Separate the features (X) and target labels (y)
         X = data.drop("Target", axis=1)
         y = data["Target"]
@@ -218,8 +217,15 @@ class LeftFrame(tk.Frame):
 
         # Evaluate the accuracy of the model
         accuracy = accuracy_score(y_test, y_pred)
-        print("Accuracy:", accuracy)
-
+      
+        self.right_frame.train_dataset_list(data,accuracy)
+        
+        self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.csv_listbox2.pack_forget()
+        self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.plot_frame.pack_forget()
+        self.right_frame.text_widget.pack_forget()
+      
 
     # function test data unseen dari folder unseendata
     # outputna akurasi
@@ -277,10 +283,12 @@ class LeftFrame(tk.Frame):
         self.disconnect_button.config(state=tk.NORMAL)
         self.right_frame.text_widget.pack(fill='both', expand=True)
         self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.csv_listbox2.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.dataset_frame.pack_forget()
         self.right_frame.plot_frame.pack_forget()
-      
+        self.right_frame.average_label.pack_forget()
+       
 
     
     def capture_data(self):
@@ -339,10 +347,12 @@ class LeftFrame(tk.Frame):
         self.disconnect_button.config(state=tk.DISABLED)
         self.right_frame.text_widget.pack(fill='both', expand=True)
         self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.csv_listbox2.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.plot_frame.pack_forget()
         self.right_frame.dataset_frame.pack_forget()
-      
+        self.right_frame.average_label.pack_forget()
+       
 
     def exit_app(self):
         self.master.destroy()
@@ -350,34 +360,37 @@ class LeftFrame(tk.Frame):
    
     def show_csv(self):
         self.right_frame.treeview_frame.pack_forget()
-      
-        folder_path = "respondent"  # Specify the folder path
-        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-        self.right_frame.update_csv_list(csv_files)
+     
+        self.right_frame.update_csv_list()
         
-       
         self.right_frame.text_widget.pack_forget()
+        self.right_frame.plot_frame.pack_forget()
         self.right_frame.dataset_frame.pack_forget()
-      
+        self.right_frame.csv_listbox2.pack_forget()
+        self.right_frame.average_label.pack_forget()
+       
 
     def show_plot(self):
         self.right_frame.plot_frame.pack_forget()
             
         self.right_frame.update_plot_list()
+        
         self.right_frame.text_widget.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.dataset_frame.pack_forget()
-
+        self.right_frame.csv_listbox2.pack_forget()
+        self.right_frame.average_label.pack_forget()
+       
         
 # fungsi membuat ratarata dari data pwe 120  
     def show_dataset(self):
      
-         
+        self.right_frame.plot_frame.pack_forget()
+      
         self.right_frame.update_dataset_list()
         
-       # self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.csv_listbox.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
-        self.right_frame.plot_frame.pack_forget()
         self.right_frame.text_widget.pack_forget()
         
    

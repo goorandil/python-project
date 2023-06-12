@@ -15,9 +15,11 @@ filename = config.get('Serial', 'filename')
 # Create the main window
 window = tk.Tk()
 
+ 
 # Maximize the window
 window.state('zoomed')
-window.title("Brainwave Monitoring Software")
+window.title("Brainwave Monitoring System")
+
 
 # Create the right frame
 right_frame = RightFrame(window)
@@ -33,7 +35,6 @@ window.grid_columnconfigure(1, weight=1)
 
 # Start the GUI event loop
 window.mainloop()
-
 # Create the main window
 root = tk.Tk()
 

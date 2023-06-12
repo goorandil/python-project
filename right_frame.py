@@ -1,24 +1,21 @@
 import os
+import statistics
 import tkinter as tk
 import tkinter.ttk as ttk
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
-
 
 class RightFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-
         # Create a text title label
         title_label = tk.Label(self, text="Brainwave Monitoring System - Naira - versi 0.2", font=("Arial", 15))
         title_label.pack(pady=0)
 
-
-
-      # Create a text widget
+        # Create a text widget
         self.text_widget = tk.Text(self, font=("Arial", 12))
         self.text_widget.visible = False
  
@@ -26,60 +23,146 @@ class RightFrame(tk.Frame):
         self.csv_listbox = tk.Listbox(self, height=5, font=("Arial", 10))
         self.csv_listbox.visible = False
        
-       # Configure the grid to expand the listbox when the window is resized
+        # Configure the grid to expand the listbox when the window is resized
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
- 
-   # Create a frame for the Treeview and scrollbar
+        # Create a frame for the Treeview and scrollbar
         self.treeview_frame = tk.Frame(self,width=50)
         self.csv_treeview = ttk.Treeview(self.treeview_frame, show="headings")
         self.treeview_frame.visible = False
       
-      # Create a frame for the Treeview and scrollbar
+        # Create a frame for the Treeview and scrollbar
         self.dataset_frame = tk.Frame(self,width=50)
         self.dataset_treeview = ttk.Treeview(self.dataset_frame, show="headings")
         self.dataset_frame.visible = False
  
-  # Create a frame for the plot canvas
+        # Create a frame for the plot canvas
         self.plot_frame = tk.Frame(self,width=300)
         self.plot_frame.visible = False
       
-    
-    
     def update_dataset_list(self):
-    
-# Create the Treeview widget
+        folder_path = "respondent"  # Specify the folder path
+        folder_pathdataset = "dataset"  # Specify the folder path
+        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+
+        # List to store the group sum averages for each CSV file
+        all_group_sum_averages = []
+
+        # Iterate over each CSV file
+        for file in csv_files:
+
+            #  print(file)
+            data_values = []
+
+        # Read the "Data" column from the current CSV file and append to data_values
+            with open(os.path.join(folder_path, file), "r") as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    data_values.append(int(row["Data"]))
+
+        # Divide the data_values into four groups
+            group_size = 120
+            groups = [data_values[i:i+group_size] for i in range(0, len(data_values), group_size)]
+
+        # Calculate the sum average for each group
+            group_sum_averages = [round(sum(group) / group_size) for group in groups]
+
+        # print(group_sum_averages)
+            all_group_sum_averages.append(group_sum_averages)
+
+        # Save the all_group_sum_averages to a combined CSV file
+        # output_file = "combined_group_sum_averages.csv"
+            selected_file = "combined_group_sum_averages.csv"
+
+            with open(os.path.join(folder_pathdataset, selected_file), "w", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+            # Write the header row
+                writer.writerow(["Baseline","Soal","Membaca"])
+            # Write the data rows
+                writer.writerows(all_group_sum_averages)
+ 
+        # Create the Treeview widget
         self.dataset_frame.pack(fill="both", expand=True)
         self.dataset_treeview.pack(fill="both", expand=True, pady=(0, 2))
         
-        selected_file = "combined_group_sum_averages.csv"
-
-                # Clear the treeview
+        # Clear the treeview
         self.dataset_treeview.delete(*self.dataset_treeview.get_children())
 
-                # Read and display the CSV data in the treeview
-        with open('D:\\python-project\\dataset\\' + selected_file, 'r') as file:
-                    # Process the file
+        # Read and display the CSV data in the treeview
+        with open('D:\python-project\dataset\\' + selected_file, 'r') as file:
+        
+            # Process the file
             csv_reader = csv.reader(file)
             headers = next(csv_reader)
             self.dataset_treeview['columns'] = headers
-            self.dataset_treeview.heading("#0", text="Row")
+            self.dataset_treeview.heading("#0", text="Row")      
             for header in headers:
                 self.dataset_treeview.heading(header, text=header)
                 self.dataset_treeview.column(header, width=100)
                 row_number = 1
-                for row in csv_reader:
-                    self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
-                    row_number += 1
+            for row in csv_reader:
+                self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
+                row_number += 1
+            
+        # mulai average 
+        data_valuesB = []
+        data_valuesS = []
+        data_valuesM = []
+        column_averageB = []  # List to store column averages
+        column_averageS = []  # List to store column averages
+        column_averageM = []  # List to store column averages
+        column_averages = []  # List to store column averages
 
-   
-         
-  
+        with open(os.path.join(folder_pathdataset, selected_file), "r") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                data_valuesB.append(int(row["Baseline"]))
+                data_valuesS.append(int(row["Soal"]))
+                data_valuesM.append(int(row["Membaca"]))
+            
+        #   print('data_valuesB', data_valuesB) 
+        #   print('data_valuesS', data_valuesS) 
+        #   print('data_valuesM', data_valuesM) 
+        column_averageB = statistics.mean(data_valuesB)
+        column_averageS = statistics.mean(data_valuesS)
+        column_averageM = statistics.mean(data_valuesM)
+          
+        #   print('column_averageB', column_averageB) 
+        #  print('column_averageS', column_averageS) 
+        #  print('column_averageM', column_averageM)   
+        column_averages.append(round(column_averageB))
+        column_averages.append(round(column_averageS))
+        column_averages.append(round(column_averageM))
+        
+        # print('column_averages = ', column_averages) 
+        labels = ["Baseline", "Soal", "Membaca"]
+        input_value = 129000
+
+        self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
+        self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
+        self.dataset_treeview.insert("", "end", text="", values=("Average Baseline", "Average Soal", "Average Membaca"))
+        self.dataset_treeview.insert("", "end", text=str(row_number), values=column_averages)
+                 
+        distances = np.abs(np.array(column_averages) - input_value)
+        nearest_feature_index = np.argmin(distances)
+        nearest_feature = labels[nearest_feature_index]
+
+        # print(f"The nearest feature to {input_value} is '{nearest_feature}'")
+        # data baru
+        unseen_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+        self.csv_listbox.pack()
+        self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_average)
+        self.csv_listbox.delete(0, tk.END)
+        
+        # Add the CSV filenames to the listbox
+        for file in unseen_files:
+            self.csv_listbox.insert(tk.END, file) 
+        
     def update_csv_list(self, csv_files):
-       
-        # Clear the listbox
-        self.csv_listbox.pack(fill='both', expand=False)
+
+            # Clear the listbox
+        self.csv_listbox.pack()
         self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
         self.csv_listbox.delete(0, tk.END)
 
@@ -87,85 +170,154 @@ class RightFrame(tk.Frame):
         for file in csv_files:
             self.csv_listbox.insert(tk.END, file)
 
-# Create the Treeview widget
+        # Create the Treeview widget
         self.treeview_frame.pack(fill="both", expand=True)
         self.csv_treeview.pack(fill="both", expand=True, pady=(0, 2))
-        
         self.text_widget.pack_forget()
         self.plot_frame.pack_forget()
-      
-   
     
     def update_plot_list(self):
-          # Create a listbox to display the CSV filenames
-          
+        # Create a listbox to display the CSV filenames
         if not self.csv_listbox.winfo_ismapped():
             self.csv_listbox.pack()
             self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
             self.csv_listbox.delete(0, tk.END)
-        
             folder_path = "respondent"  # Specify the folder path
             csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-      
-       
+    
         # Add the CSV filenames to the listbox
             for file in csv_files:
                 self.csv_listbox.insert(tk.END, file)
- 
-            self.plot_frame.pack(fill="both", expand=True)
-   
-        else:
-            self.csv_listbox.pack()
-            self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
-            self.csv_listbox.delete(0, tk.END)
-        
-            folder_path = "respondent"  # Specify the folder path
-            csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+                self.plot_frame.pack(fill="both", expand=True)
+            else:
+                self.csv_listbox.pack()
+                self.csv_listbox.bind("<<ListboxSelect>>", self.show_selected_data)
+                self.csv_listbox.delete(0, tk.END)
+                folder_path = "respondent"  # Specify the folder path
+                csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
       
-       
         # Add the CSV filenames to the listbox
-            for file in csv_files:
-                self.csv_listbox.insert(tk.END, file)
- 
+        for file in csv_files:
+            self.csv_listbox.insert(tk.END, file)
             self.plot_frame.pack_forget()
             self.clear_plot()
-      
-        self.fig, self.ax = plt.subplots()
-        self.plot_canvas = None
-       
-        self.text_widget.pack_forget()
-        self.treeview_frame.pack_forget()
-      
-    
+            self.fig, self.ax = plt.subplots()
+            self.plot_canvas = None 
+            self.text_widget.pack_forget()
+            self.treeview_frame.pack_forget()
+
     def show_selected_data(self, event):
             # Get the selected filename from the listbox
-            self.plot_frame.pack(fill="both", expand=True)
-            selected_index = self.csv_listbox.curselection()
-            if selected_index:
-                selected_file = self.csv_listbox.get(selected_index)
+        self.plot_frame.pack(fill="both", expand=True)
+        selected_index = self.csv_listbox.curselection()
+        if selected_index:
+            selected_file = self.csv_listbox.get(selected_index)
 
                 # Clear the treeview
-                self.csv_treeview.delete(*self.csv_treeview.get_children())
+            self.csv_treeview.delete(*self.csv_treeview.get_children())
 
                 # Read and display the CSV data in the treeview
-                with open('D:\\python-project\\respondent\\' + selected_file, 'r') as file:
+            with open('D:\\python-project\\respondent\\' + selected_file, 'r') as file:
                     # Process the file
-                    csv_reader = csv.reader(file)
-                    headers = next(csv_reader)
-                    self.csv_treeview['columns'] = headers
-                    self.csv_treeview.heading("#0", text="Row")
-                    for header in headers:
-                        self.csv_treeview.heading(header, text=header)
-                        self.csv_treeview.column(header, width=100)
+                csv_reader = csv.reader(file)
+                headers = next(csv_reader)
+                self.csv_treeview['columns'] = headers
+                self.csv_treeview.heading("#0", text="Row")
+                for header in headers:
+                    self.csv_treeview.heading(header, text=header)
+                    self.csv_treeview.column(header, width=100)
                     row_number = 1
                     for row in csv_reader:
                         self.csv_treeview.insert("", "end", text=str(row_number), values=row)
                         row_number += 1
-
+                
                 self.clear_plot()
+
                 # Plot the data from the CSV file
                 self.plot_csv_data(selected_file)
-   
+
+    def show_selected_average(self,event):
+            # Get the selected filename from the listbox
+        folder_pathdataset = "dataset"  # Specify the folder path
+        folder_path = "respondent"  # Specify the folder path
+        selected_index = self.csv_listbox.curselection()
+        if selected_index:
+            selected_file = self.csv_listbox.get(selected_index)
+            print(selected_file)
+            
+            # mulai average 
+            data_valuesB = []
+            data_valuesS = []
+            data_valuesM = []
+            column_averageB = []  # List to store column averages
+            column_averageS = []  # List to store column averages
+            column_averageM = []  # List to store column averages
+            column_averages = []  # List to store column averages
+
+            with open(os.path.join(folder_pathdataset,'combined_group_sum_averages.csv'), "r") as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    data_valuesB.append(int(row["Baseline"]))
+                    data_valuesS.append(int(row["Soal"]))
+                    data_valuesM.append(int(row["Membaca"]))
+            
+                #   print('data_valuesB', data_valuesB) 
+                #   print('data_valuesS', data_valuesS) 
+                #   print('data_valuesM', data_valuesM) 
+                column_averageB = statistics.mean(data_valuesB)
+                column_averageS = statistics.mean(data_valuesS)
+                column_averageM = statistics.mean(data_valuesM)
+          
+                #  print('column_averageB', column_averageB) 
+                #  print('column_averageS', column_averageS) 
+                #  print('column_averageM', column_averageM) 
+                column_averages.append(round(column_averageB))
+                column_averages.append(round(column_averageS))
+                column_averages.append(round(column_averageM))
+                data_values = [] 
+
+                # List to store the group sum averages for each CSV file
+                all_group_sum_averages = []
+
+                # Process the file
+                with open(os.path.join(folder_path, selected_file), "r") as csv_file:
+                    # Process the file
+                    csv_reader = csv.reader(csv_file)
+                    next(csv_reader) 
+                    for row in csv_reader:
+                        data_values.append(int(row[1]))
+                # print(data_values)         
+                # Divide the data_values into four groups
+                group_size = 120
+                groups = [data_values[i:i+group_size] for i in range(0, len(data_values), group_size)]
+
+                # Calculate the sum average for each group
+                group_sum_averages = [round(sum(group) / group_size) for group in groups]
+
+                # print(group_sum_averages)
+                all_group_sum_averages.append(group_sum_averages)
+              
+                # print(all_group_sum_averages[0][0]) 
+                # print(all_group_sum_averages[0][1]) 
+                # print(all_group_sum_averages[0][2]) 
+                print('Average Dataset = ', column_averages) 
+                print('Average Data Test = ', all_group_sum_averages[0]) 
+                labels = ["Baseline", "Soal", "Membaca"]
+
+                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][0])
+                nearest_feature_index = np.argmin(distances)
+                nearest_feature = labels[nearest_feature_index]
+                print(f"The nearest feature to {all_group_sum_averages[0][0]} is '{nearest_feature}'")
+
+                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][1])
+                nearest_feature_index = np.argmin(distances)
+                nearest_feature = labels[nearest_feature_index]
+                print(f"The nearest feature to {all_group_sum_averages[0][1]} is '{nearest_feature}'")
+  
+                distances = np.abs(np.array(column_averages) - all_group_sum_averages[0][2])
+                nearest_feature_index = np.argmin(distances)
+                nearest_feature = labels[nearest_feature_index]
+                print(f"The nearest feature to {all_group_sum_averages[0][2]} is '{nearest_feature}'")
    
     def clear_plot(self):
         # Clear the previous plot
@@ -175,8 +327,6 @@ class RightFrame(tk.Frame):
             self.plot_canvas.get_tk_widget().destroy()  # Destroy the canvas widget
             self.plot_canvas = None  # Set the plot canvas to None
 
-    
-    
     def plot_csv_data(self, csv_file):
         # Clear the previous plot
         if self.plot_canvas:
@@ -197,7 +347,7 @@ class RightFrame(tk.Frame):
         self.ax.set_ylabel('Y-axis', fontsize=10)  # Increase the font size of y-axis label
         self.ax.set_title('Data Plot', fontsize=10)  # Increase the font size of the plot title
 
-  # Increase the font size of tick labels on both axes
+        # Increase the font size of tick labels on both axes
         self.ax.tick_params(axis='x', labelsize=10)
         self.ax.tick_params(axis='y', labelsize=10)
 

@@ -1,4 +1,5 @@
 import os
+import pickle
 import statistics
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -182,9 +183,17 @@ class RightFrame(tk.Frame):
 
     def test_dataset_list(self):
         folder_pathdataset = "unseendata"  # Specify the folder path
-         
+        folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
+      
         self.average_label.config(text=f"")
        
+        # Load the SVM model from file
+        with open(folder_pathmodel, "rb") as file:
+            svm_model = pickle.load(file)
+
+        # Print the details of the SVM model
+        print('svm_model')
+        print(svm_model)
          
         # data baru
         unseen_files = [file for file in os.listdir(folder_pathdataset) if file.endswith(".csv")]

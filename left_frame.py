@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import messagebox
 import tkinter.ttk as ttk
 import joblib
+from matplotlib import pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn import svm
 from sklearn.model_selection import train_test_split
@@ -181,13 +183,15 @@ class LeftFrame(tk.Frame):
         except FileNotFoundError:
             print(f"Unable to open file '{csv_file}' with the specified text editor.")
 
-
+ 
+    
 
 
     # function training dari  combined_group_sum_averages_labeled.csv
     # outputnya svm model disimpan difolder model
   
     def train_dataset_file(self):
+        # Call the function to plot decision boundaries
         
         folder_pathdata = "D:\\python-project\\dataset\\combined_group_sum_averages_labeled.csv"  # Specify the folder path
         folder_pathmodel = "D:\\python-project\\model\\svm_model.pkl"  # Specify the folder path
@@ -225,9 +229,10 @@ class LeftFrame(tk.Frame):
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.plot_frame.pack_forget()
         self.right_frame.text_widget.pack_forget()
-      
+     
 
-    # function test data unseen dari folder unseendata
+    # Generate some random data for demonstration
+        # function test data unseen dari folder unseendata
     # outputna akurasi
     def test_dataset_file(self):
         
@@ -237,6 +242,7 @@ class LeftFrame(tk.Frame):
         # Load the trained SVM model
         model = svm.SVC()
         model = joblib.load(folder_pathmodel)
+
 
 
         # Prepare your unseen data

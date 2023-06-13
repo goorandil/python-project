@@ -385,12 +385,12 @@ class LeftFrame(tk.Frame):
 # fungsi membuat ratarata dari data pwe 120  
     def show_dataset(self):
      
-        self.right_frame.plot_frame.pack_forget()
-      
-        self.right_frame.update_dataset_list()
-        
-        self.right_frame.csv_listbox.pack_forget()
-        self.right_frame.treeview_frame.pack_forget()
+       
+         
         self.right_frame.text_widget.pack_forget()
-        
-   
+      #  self.right_frame.plot_frame.pack_forget()
+        self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.csv_listbox2.pack_forget()
+        self.right_frame.average_label.pack_forget()
+        self.right_frame.update_dataset_list()
+       

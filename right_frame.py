@@ -24,7 +24,7 @@ class RightFrame(tk.Frame):
         self.text_widget.visible = False
  
         # Create a listbox to display the CSV filenames
-        self.csv_listbox = tk.Listbox(self, height=5, font=("Arial", 10))
+        self.csv_listbox = tk.Listbox(self, height=5, font=("Arial", 10), width=50)
         self.csv_listbox.visible = False
        
         # Create a listbox to display the CSV filenames
@@ -46,12 +46,12 @@ class RightFrame(tk.Frame):
         self.treeview_frame.visible = False
       
         # Create a frame for the Treeview and scrollbar
-        self.dataset_frame = tk.Frame(self,width=50)
+        self.dataset_frame = tk.Frame(self,width=200)
         self.dataset_treeview = ttk.Treeview(self.dataset_frame, show="headings")
         self.dataset_frame.visible = False
  
         # Create a frame for the plot canvas
-        self.plot_frame = tk.Frame(self,width=300)
+        self.plot_frame = tk.Frame(self,width=50)
         self.plot_frame.visible = False
       
 
@@ -101,8 +101,8 @@ class RightFrame(tk.Frame):
                 writer.writerows(all_group_sum_averages)
  
         # Create the Treeview widget
-        self.dataset_frame.pack(fill="both", expand=True)
-        self.dataset_treeview.pack(fill="both", expand=True, pady=(0, 2))
+        self.dataset_frame.pack()
+        self.dataset_treeview.pack()
         
         # Clear the treeview
         self.dataset_treeview.delete(*self.dataset_treeview.get_children())
@@ -122,7 +122,10 @@ class RightFrame(tk.Frame):
             for row in csv_reader:
                 self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
                 row_number += 1
-            
+        
+        self.text_widget.pack_forget()
+        self.plot_frame.pack_forget()
+        self.csv_listbox2.pack_forget()  
         # mulai average 
     #    data_valuesB = []
     #    data_valuesS = []
@@ -215,8 +218,8 @@ class RightFrame(tk.Frame):
 
        
          # Create the Treeview widget
-        self.dataset_frame.pack(fill="both", expand=True)
-        self.dataset_treeview.pack(fill="both", expand=True, pady=(0, 2))
+        self.dataset_frame.pack(fill="none", expand=True)
+        self.dataset_treeview.pack(fill="none", expand=True, pady=(0, 2))
         
         # Clear the treeview
         self.dataset_treeview.delete(*self.dataset_treeview.get_children())
@@ -276,8 +279,8 @@ class RightFrame(tk.Frame):
             self.csv_listbox.insert(tk.END, file)
 
         # Create the Treeview widget
-        self.treeview_frame.pack(fill="both", expand=True)
-        self.csv_treeview.pack(fill="both", expand=True, pady=(0, 2))
+        self.treeview_frame.pack(fill="none", expand=False)
+        self.csv_treeview.pack(fill="none", expand=False, pady=(0, 2))
         
         self.text_widget.pack_forget()
         self.plot_frame.pack_forget()
@@ -498,8 +501,8 @@ class RightFrame(tk.Frame):
 
     def show_selected_unseen(self,event):
             # Get the selected filename from the listbox
-        folder_pathdata = "respondent"  # Specify the folder path
         folder_pathunseen = "unseendata"  # Specify the folder path
+        folder_path = "respondent"  # Specify the folder path
         
        
         selected_index = self.csv_listbox2.curselection()
@@ -512,7 +515,7 @@ class RightFrame(tk.Frame):
 
             data_values = []
              # Read the "Data" column from the current CSV file and append to data_values
-            with open(os.path.join(folder_pathdata, selected_file), "r") as csv_file:
+            with open(os.path.join(folder_path, selected_file), "r") as csv_file:
                 reader = csv.DictReader(csv_file)
                 for row in reader:
                     data_values.append(int(row["Data"]))
@@ -570,7 +573,7 @@ class RightFrame(tk.Frame):
         y = data['Data']
 
         # Plot the data
-        self.ax.plot(x, y/1000000)
+        self.ax.plot(x, y/10000)
 
         # Customize the plot if needed
         self.ax.set_xlabel('X-axis', fontsize=10)  # Increase the font size of x-axis label

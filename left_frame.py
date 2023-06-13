@@ -98,6 +98,10 @@ class LeftFrame(tk.Frame):
         self.train_button.pack(pady=10, anchor='center')
 
   # Create the start record button
+        self.unseen_button = tk.Button(self, text="Create Unseen Dataset", command=self.unseen_dataset_file,font=("Arial", fontsize))
+        self.unseen_button.pack(pady=10, anchor='center')
+
+# Create the start record button
         self.test_button = tk.Button(self, text="Test Unseen Data", command=self.test_dataset_file,font=("Arial", fontsize))
         self.test_button.pack(pady=10, anchor='center')
 
@@ -193,6 +197,7 @@ class LeftFrame(tk.Frame):
     def train_dataset_file(self):
         # Call the function to plot decision boundaries
         
+        self.right_frame.plot_frame.pack_forget()
         folder_pathdata = "D:\\python-project\\dataset\\combined_group_sum_averages_labeled.csv"  # Specify the folder path
         folder_pathmodel = "D:\\python-project\\model\\svm_model.pkl"  # Specify the folder path
      
@@ -227,52 +232,30 @@ class LeftFrame(tk.Frame):
         self.right_frame.csv_listbox.pack_forget()
         self.right_frame.csv_listbox2.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
-        self.right_frame.plot_frame.pack_forget()
         self.right_frame.text_widget.pack_forget()
      
+
+
+    def unseen_dataset_file(self):
+        self.right_frame.unseen_dataset_list()
+        
+        self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.plot_frame.pack_forget()
+        self.right_frame.dataset_treeview.pack_forget()
+        self.right_frame.text_widget.pack_forget()
 
     # Generate some random data for demonstration
         # function test data unseen dari folder unseendata
     # outputna akurasi
     def test_dataset_file(self):
+         
+         
+        self.right_frame.test_dataset_list()
         
-        folder_pathdata = "D:\\python-project\\unseendata\\unseen_data.csv"  # Specify the folder path
-        folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
-     
-        # Load the trained SVM model
-        model = svm.SVC()
-        model = joblib.load(folder_pathmodel)
-
-
-
-        # Prepare your unseen data
-        unseen_data = pd.read_csv(folder_pathdata)
-        X_unseen = unseen_data.drop('Target', axis=1)  # Remove the target variable if present
-
-        # Preprocess the unseen data (e.g., scaling/normalization)
-
-        # Make predictions on the unseen data
-        predictions = model.predict(X_unseen)
-
-        # Evaluate the model's performance
-        accuracy = accuracy_score(unseen_data['Target'], predictions)
-        print(f"Accuracy: {accuracy}")
-    
-        # Make predictions on the new data using the trained SVM model
-        predictions = model.predict(X_unseen)
-
-        # Assign the predictions to a new column
-        X_unseen['Target'] = predictions
-
-        # Display the true labels and predicted labels
-        print(X_unseen[['Target', 'Target']])
-    
         self.right_frame.plot_frame.pack_forget()
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.dataset_treeview.pack_forget()
-       
-        self.right_frame.test_dataset_list()
-        
         self.right_frame.csv_listbox.pack_forget()
         self.right_frame.text_widget.pack_forget()
         

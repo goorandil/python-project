@@ -61,7 +61,7 @@ class RightFrame(tk.Frame):
         folder_pathdataset = "dataset"  # Specify the folder path
         csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
 
-        self.average_label.config(text=f"")
+        self.average_label.pack_forget()
        
         # List to store the group sum averages for each CSV file
         all_group_sum_averages = []
@@ -185,7 +185,7 @@ class RightFrame(tk.Frame):
         folder_pathdataset = "unseendata"  # Specify the folder path
         folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
       
-        self.average_label.config(text=f"")
+        self.average_label.pack_forget()
        
         # Load the SVM model from file
         with open(folder_pathmodel, "rb") as file:
@@ -206,7 +206,8 @@ class RightFrame(tk.Frame):
         for file in unseen_files:
             self.csv_listbox2.insert(tk.END, file) 
  
-
+        
+       
 
 
     def train_dataset_list(self,data,accuracy):
@@ -241,12 +242,30 @@ class RightFrame(tk.Frame):
                 self.dataset_treeview.insert("", "end", text=str(row_number), values=row)
                 row_number += 1
             
-        self.average_label.config(text=f"Accuracy : {accuracy}\nSVM Classification Mode saved at model folder", 
+        self.average_label.config(text=f"Accuracy : {accuracy}\n   SVM Classification Mode saved at model folder", 
                           font=("Arial", 12), padx=10, pady=10)
         self.average_label.pack(side=tk.LEFT)
-      
+        self.plot_frame.pack_forget()
                
 
+    def unseen_dataset_list(self):
+        folder_pathdataset = "respondent"  # Specify the folder path
+        self.average_label.pack_forget()
+       
+        # data baru
+        unseen_files = [file for file in os.listdir(folder_pathdataset) if file.endswith(".csv")]
+        self.csv_listbox2.pack(side=tk.LEFT)
+        
+        self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_unseen)
+        self.csv_listbox2.delete(0, tk.END)
+        
+        # Add the CSV filenames to the listbox
+        for file in unseen_files:
+            self.csv_listbox2.insert(tk.END, file) 
+ 
+         
+        self.plot_frame.pack_forget()
+               
 
     def update_csv_list(self):
         folder_path = "respondent"  # Specify the folder path
@@ -445,7 +464,7 @@ class RightFrame(tk.Frame):
             # Get the selected filename from the listbox
         folder_pathdata = "unseendata"  # Specify the folder path
         folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
-     
+        
        # Load the trained SVM model
         model = svm.SVC()
         model = joblib.load(folder_pathmodel)
@@ -477,7 +496,58 @@ class RightFrame(tk.Frame):
             self.average_label.config(text=f"Accuracy : {accuracy}\n\n{unseen_data[['Target', 'predicted_label']]}", 
                           font=("Arial", 12), padx=10, pady=10)
             self.average_label.pack(side=tk.LEFT)
-  
+
+
+
+    def show_selected_unseen(self,event):
+            # Get the selected filename from the listbox
+        folder_pathdata = "respondent"  # Specify the folder path
+        folder_pathunseen = "unseendata"  # Specify the folder path
+        
+       
+        selected_index = self.csv_listbox2.curselection()
+         
+        if selected_index:
+            selected_file = self.csv_listbox2.get(selected_index)
+            print(selected_file)
+             
+            all_group_sum_averages = []
+
+            data_values = []
+             # Read the "Data" column from the current CSV file and append to data_values
+            with open(os.path.join(folder_pathdata, selected_file), "r") as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    data_values.append(int(row["Data"]))
+
+        # Divide the data_values into four groups
+            group_size = 120
+            groups = [data_values[i:i+group_size] for i in range(0, len(data_values), group_size)]
+
+        # Calculate the sum average for each group
+            group_sum_averages = [round(sum(group) / group_size) for group in groups]
+            group_sum_averages.append("''")
+
+        # print(group_sum_averages)
+            all_group_sum_averages.append(group_sum_averages)
+          
+            print(all_group_sum_averages)
+           
+            unseen_selected_file = "unseen_"+selected_file
+
+            with open(os.path.join(folder_pathunseen, unseen_selected_file), "w", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+            # Write the header row
+                writer.writerow(["Baseline","Soal","Membaca","Target"])
+            # Write the data rows
+                writer.writerows(all_group_sum_averages)
+ 
+            
+            self.average_label.config(text=f"Average Dataset\nBaseline   Soal   Mwmbaca\n {all_group_sum_averages[0]}\n\nUnseen Dataset created at unseendata folder", 
+                          font=("Arial", 12), padx=10, pady=10)
+            self.average_label.pack(side=tk.LEFT)
+    
+
 
     def clear_plot(self):
         # Clear the previous plot
@@ -500,7 +570,7 @@ class RightFrame(tk.Frame):
         y = data['Data']
 
         # Plot the data
-        self.ax.plot(x, y)
+        self.ax.plot(x, y/1000000)
 
         # Customize the plot if needed
         self.ax.set_xlabel('X-axis', fontsize=10)  # Increase the font size of x-axis label

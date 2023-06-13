@@ -3,10 +3,13 @@ import statistics
 import tkinter as tk
 import tkinter.ttk as ttk
 import csv
+import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from sklearn import svm
+from sklearn.metrics import accuracy_score
 
 class RightFrame(tk.Frame):
     def __init__(self, parent):
@@ -57,6 +60,8 @@ class RightFrame(tk.Frame):
         folder_pathdataset = "dataset"  # Specify the folder path
         csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
 
+        self.average_label.config(text=f"")
+       
         # List to store the group sum averages for each CSV file
         all_group_sum_averages = []
 
@@ -172,7 +177,28 @@ class RightFrame(tk.Frame):
         # Add the CSV filenames to the listbox
         for file in unseen_files:
             self.csv_listbox2.insert(tk.END, file) 
+
+
+
+    def test_dataset_list(self):
+        folder_pathdataset = "unseendata"  # Specify the folder path
+         
+        self.average_label.config(text=f"")
+       
+         
+        # data baru
+        unseen_files = [file for file in os.listdir(folder_pathdataset) if file.endswith(".csv")]
+        self.csv_listbox2.pack(side=tk.LEFT)
         
+        self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_test)
+        self.csv_listbox2.delete(0, tk.END)
+        
+        # Add the CSV filenames to the listbox
+        for file in unseen_files:
+            self.csv_listbox2.insert(tk.END, file) 
+ 
+
+
 
     def train_dataset_list(self,data,accuracy):
 
@@ -405,6 +431,44 @@ class RightFrame(tk.Frame):
                           font=("Arial", 12), padx=10, pady=10)
                 self.average_label.pack(side=tk.LEFT)
       
+
+    def show_selected_test(self,event):
+            # Get the selected filename from the listbox
+        folder_pathdata = "unseendata"  # Specify the folder path
+        folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
+     
+       # Load the trained SVM model
+        model = svm.SVC()
+        model = joblib.load(folder_pathmodel)
+
+       
+        selected_index = self.csv_listbox2.curselection()
+         
+        if selected_index:
+            selected_file = self.csv_listbox2.get(selected_index)
+            print(selected_file)
+            
+             # Prepare your unseen data
+            unseen_data = pd.read_csv(folder_pathdata+"/"+selected_file)
+            X_unseen = unseen_data.drop('Target', axis=1)  # Remove the target variable if present
+
+            # Preprocess the unseen data (e.g., scaling/normalization)
+
+            # Make predictions on the unseen data
+            predictions = model.predict(X_unseen)
+            unseen_data['predicted_label'] = predictions
+
+            print(unseen_data[['Target', 'predicted_label']])
+        # Evaluate the model's performance
+            accuracy = accuracy_score(unseen_data['Target'], predictions)
+            print(f"Accuracy: {accuracy}")
+    
+            
+            
+            self.average_label.config(text=f"Accuracy : {accuracy}\n\n{unseen_data[['Target', 'predicted_label']]}", 
+                          font=("Arial", 12), padx=10, pady=10)
+            self.average_label.pack(side=tk.LEFT)
+  
 
     def clear_plot(self):
         # Clear the previous plot

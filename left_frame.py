@@ -261,6 +261,15 @@ class LeftFrame(tk.Frame):
         # Display the true labels and predicted labels
         print(X_unseen[['Target', 'Target']])
     
+        self.right_frame.plot_frame.pack_forget()
+        self.right_frame.treeview_frame.pack_forget()
+        self.right_frame.dataset_treeview.pack_forget()
+       
+        self.right_frame.test_dataset_list()
+        
+        self.right_frame.csv_listbox.pack_forget()
+        self.right_frame.text_widget.pack_forget()
+        
     
     
     def connect_serial(self):

@@ -57,9 +57,11 @@ class RightFrame(tk.Frame):
 
 
     def update_dataset_list(self):
-        folder_path = "training"  # Specify the folder path
+        folder_pathtraining = "training"  # Specify the folder path
         folder_pathdataset = "dataset"  # Specify the folder path
-        csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+        selected_file = "combined_group_sum_averages.csv"
+
+        csv_files = [file for file in os.listdir(folder_pathtraining) if file.endswith(".csv")]
 
         self.average_label.pack_forget()
        
@@ -73,7 +75,7 @@ class RightFrame(tk.Frame):
             data_values = []
 
         # Read the "Data" column from the current CSV file and append to data_values
-            with open(os.path.join(folder_path, file), "r") as csv_file:
+            with open(os.path.join(folder_pathtraining, file), "r") as csv_file:
                 reader = csv.DictReader(csv_file)
                 for row in reader:
                     data_values.append(int(row["Data"]))
@@ -90,8 +92,7 @@ class RightFrame(tk.Frame):
 
         # Save the all_group_sum_averages to a combined CSV file
         # output_file = "combined_group_sum_averages.csv"
-            selected_file = "combined_group_sum_averages.csv"
-
+           
             with open(os.path.join(folder_pathdataset, selected_file), "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
             # Write the header row
@@ -107,7 +108,7 @@ class RightFrame(tk.Frame):
         self.dataset_treeview.delete(*self.dataset_treeview.get_children())
 
         # Read and display the CSV data in the treeview
-        with open('D:\python-project\dataset\\' + selected_file, 'r') as file:
+        with open(os.path.join(folder_pathdataset, selected_file), 'r') as file:
         
             # Process the file
             csv_reader = csv.reader(file)
@@ -123,78 +124,72 @@ class RightFrame(tk.Frame):
                 row_number += 1
             
         # mulai average 
-        data_valuesB = []
-        data_valuesS = []
-        data_valuesM = []
-        column_averageB = []  # List to store column averages
-        column_averageS = []  # List to store column averages
-        column_averageM = []  # List to store column averages
-        column_averages = []  # List to store column averages
+    #    data_valuesB = []
+    #    data_valuesS = []
+    #    data_valuesM = []
+    #    column_averageB = []  # List to store column averages
+    #    column_averageS = []  # List to store column averages
+    #    column_averageM = []  # List to store column averages
+    #    column_averages = []  # List to store column averages
 
-        with open(os.path.join(folder_pathdataset, selected_file), "r") as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                data_valuesB.append(int(row["Baseline"]))
-                data_valuesS.append(int(row["Soal"]))
-                data_valuesM.append(int(row["Membaca"]))
+     #   with open(os.path.join(folder_pathdataset, selected_file), "r") as csv_file:
+     #       reader = csv.DictReader(csv_file)
+     #       for row in reader:
+      #          data_valuesB.append(int(row["Baseline"]))
+       #         data_valuesS.append(int(row["Soal"]))
+       #         data_valuesM.append(int(row["Membaca"]))
             
         #   print('data_valuesB', data_valuesB) 
         #   print('data_valuesS', data_valuesS) 
         #   print('data_valuesM', data_valuesM) 
-        column_averageB = statistics.mean(data_valuesB)
-        column_averageS = statistics.mean(data_valuesS)
-        column_averageM = statistics.mean(data_valuesM)
+     #   column_averageB = statistics.mean(data_valuesB)
+     #   column_averageS = statistics.mean(data_valuesS)
+     #   column_averageM = statistics.mean(data_valuesM)
           
         #   print('column_averageB', column_averageB) 
         #  print('column_averageS', column_averageS) 
         #  print('column_averageM', column_averageM)   
-        column_averages.append(round(column_averageB))
-        column_averages.append(round(column_averageS))
-        column_averages.append(round(column_averageM))
+     #   column_averages.append(round(column_averageB))
+     #   column_averages.append(round(column_averageS))
+     #   column_averages.append(round(column_averageM))
         
         # print('column_averages = ', column_averages) 
-        labels = ["Baseline", "Soal", "Membaca"]
-        input_value = 129000
+     #   labels = ["Baseline", "Soal", "Membaca"]
+     #   input_value = 129000
 
      #   self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
      #   self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
      #   self.dataset_treeview.insert("", "end", text="", values=("Average Baseline", "Average Soal", "Average Membaca"))
      #   self.dataset_treeview.insert("", "end", text=str(row_number), values=column_averages)
                  
-        distances = np.abs(np.array(column_averages) - input_value)
-        nearest_feature_index = np.argmin(distances)
-        nearest_feature = labels[nearest_feature_index]
+      #  distances = np.abs(np.array(column_averages) - input_value)
+      #  nearest_feature_index = np.argmin(distances)
+      #  nearest_feature = labels[nearest_feature_index]
 
         # print(f"The nearest feature to {input_value} is '{nearest_feature}'")
         
         
         # data baru
-        unseen_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+      #  unseen_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
       #  self.csv_listbox2.pack(side=tk.LEFT)
         
       #  self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_average)
       #  self.csv_listbox2.delete(0, tk.END)
         
         # Add the CSV filenames to the listbox
-        for file in unseen_files:
-            self.csv_listbox2.insert(tk.END, file) 
+       # for file in unseen_files:
+        #    self.csv_listbox2.insert(tk.END, file) 
 
 
 
     def test_dataset_list(self):
         folder_pathdataset = "unseendata"  # Specify the folder path
-        folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
-      
+        folder_pathmodel = "model"  # Specify the folder path
+        model_file = "svm_model.pkl"
+
         self.average_label.pack_forget()
        
-        # Load the SVM model from file
-        with open(folder_pathmodel, "rb") as file:
-            svm_model = pickle.load(file)
-
-        # Print the details of the SVM model
-        print('svm_model')
-        print(svm_model)
-         
+          
         # data baru
         unseen_files = [file for file in os.listdir(folder_pathdataset) if file.endswith(".csv")]
         self.csv_listbox2.pack(side=tk.LEFT)
@@ -333,6 +328,8 @@ class RightFrame(tk.Frame):
 
     def show_selected_data(self, event):
             # Get the selected filename from the listbox
+        folder_path = "respondent"  # Specify the folder path
+      
         selected_index = self.csv_listbox.curselection()
         if selected_index:
             selected_file = self.csv_listbox.get(selected_index)
@@ -341,7 +338,7 @@ class RightFrame(tk.Frame):
             self.csv_treeview.delete(*self.csv_treeview.get_children())
 
                 # Read and display the CSV data in the treeview
-            with open('D:\\python-project\\respondent\\' + selected_file, 'r') as file:
+            with open(os.path.join(folder_path, selected_file), 'r') as file:
                     # Process the file
                 csv_reader = csv.reader(file)
                 headers = next(csv_reader)
@@ -463,11 +460,11 @@ class RightFrame(tk.Frame):
     def show_selected_test(self,event):
             # Get the selected filename from the listbox
         folder_pathdata = "unseendata"  # Specify the folder path
-        folder_pathmodel = "D:\python-project\model\svm_model.pkl"  # Specify the folder path
-        
+        folder_pathmodel = "model"  # Specify the folder path
+        model_file= "svm_model.pkl"
        # Load the trained SVM model
         model = svm.SVC()
-        model = joblib.load(folder_pathmodel)
+        model = joblib.load(os.path.join(folder_pathmodel,model_file))
 
        
         selected_index = self.csv_listbox2.curselection()
@@ -477,7 +474,7 @@ class RightFrame(tk.Frame):
             print(selected_file)
             
              # Prepare your unseen data
-            unseen_data = pd.read_csv(folder_pathdata+"/"+selected_file)
+            unseen_data = pd.read_csv(os.path.join(folder_pathdata,selected_file))
             X_unseen = unseen_data.drop('Target', axis=1)  # Remove the target variable if present
 
             # Preprocess the unseen data (e.g., scaling/normalization)
@@ -558,12 +555,15 @@ class RightFrame(tk.Frame):
             self.plot_canvas = None  # Set the plot canvas to None
 
     def plot_csv_data(self, csv_file):
+        
+        folder_pathdata = "respondent"  # Specify the folder path
+        
         # Clear the previous plot
         if self.plot_canvas:
             self.plot_canvas.get_tk_widget().destroy()
 
         # Read the CSV file into a pandas DataFrame
-        data = pd.read_csv('D:\\python-project\\respondent\\' + csv_file)
+        data = pd.read_csv(os.path.join(folder_pathdata, csv_file))
 
         # Extract the data for plotting
         x = data['Timestamp']

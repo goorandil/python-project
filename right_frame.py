@@ -57,7 +57,7 @@ class RightFrame(tk.Frame):
 
 
     def update_dataset_list(self):
-        folder_path = "respondenttraining"  # Specify the folder path
+        folder_path = "training"  # Specify the folder path
         folder_pathdataset = "dataset"  # Specify the folder path
         csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
 
@@ -156,10 +156,10 @@ class RightFrame(tk.Frame):
         labels = ["Baseline", "Soal", "Membaca"]
         input_value = 129000
 
-        self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
-        self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
-        self.dataset_treeview.insert("", "end", text="", values=("Average Baseline", "Average Soal", "Average Membaca"))
-        self.dataset_treeview.insert("", "end", text=str(row_number), values=column_averages)
+     #   self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
+     #   self.dataset_treeview.insert("", "end", text="", values=("", "", ""))
+     #   self.dataset_treeview.insert("", "end", text="", values=("Average Baseline", "Average Soal", "Average Membaca"))
+     #   self.dataset_treeview.insert("", "end", text=str(row_number), values=column_averages)
                  
         distances = np.abs(np.array(column_averages) - input_value)
         nearest_feature_index = np.argmin(distances)
@@ -170,10 +170,10 @@ class RightFrame(tk.Frame):
         
         # data baru
         unseen_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
-        self.csv_listbox2.pack(side=tk.LEFT)
+      #  self.csv_listbox2.pack(side=tk.LEFT)
         
-        self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_average)
-        self.csv_listbox2.delete(0, tk.END)
+      #  self.csv_listbox2.bind("<<ListboxSelect>>", self.show_selected_average)
+      #  self.csv_listbox2.delete(0, tk.END)
         
         # Add the CSV filenames to the listbox
         for file in unseen_files:

@@ -176,14 +176,12 @@ class LeftFrame(tk.Frame):
     # combined_group_sum_averages.csv hasilnya di save di combined_group_sum_averages_labeled.csv
     def open_dataset_file(self):
        
-        folder_pathdata = "D:\python-project\dataset"  # Specify the folder path
-        csv_file = folder_pathdata+ "\combined_group_sum_averages.csv"
-        
-        
-        text_editor_cmd = ["notepad", csv_file]  # Replace "notepad" with your desired text editor program
-
+        folder_pathdata = "dataset" 
+        file_selected = "combined_group_sum_averages.csv"# Specify the folder path
+        csv_file = os.path.join(folder_pathdata, file_selected) 
+               
         try:
-            subprocess.run(text_editor_cmd)
+            subprocess.run([csv_file], shell=True)
         except FileNotFoundError:
             print(f"Unable to open file '{csv_file}' with the specified text editor.")
 
@@ -198,11 +196,16 @@ class LeftFrame(tk.Frame):
         # Call the function to plot decision boundaries
         
         self.right_frame.plot_frame.pack_forget()
-        folder_pathdata = "D:\\python-project\\dataset\\combined_group_sum_averages_labeled.csv"  # Specify the folder path
-        folder_pathmodel = "D:\\python-project\\model\\svm_model.pkl"  # Specify the folder path
-     
+       
+        folder_pathdata = "dataset" 
+        flabeled = "combined_group_sum_averages_labeled.csv"# Specify the folder path
+        folder_pathmodel = "model" 
+        fmodel = "svm_model.pkl"# Specify the folder path
+        labeled_file = os.path.join(folder_pathdata, flabeled) 
+        model_file = os.path.join(folder_pathmodel, fmodel) 
+        
          # Load the labeled dataset
-        data = pd.read_csv(folder_pathdata)
+        data = pd.read_csv(labeled_file)
         
         # Separate the features (X) and target labels (y)
         X = data.drop("Target", axis=1)
@@ -218,7 +221,6 @@ class LeftFrame(tk.Frame):
         clf.fit(X_train, y_train)
 
         # Save the trained model to a file
-        model_file = folder_pathmodel
         joblib.dump(clf, model_file)
 
         # Make predictions on the test data

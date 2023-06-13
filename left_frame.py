@@ -48,8 +48,8 @@ class LeftFrame(tk.Frame):
         self.filename_label.pack()
 
         # Create a separator line
-        separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
-        separator2.pack(fill="x", pady=5, padx=5)
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
 
         # Create the connect button
         self.connect_button = tk.Button(self, text="Connect/Record", command=self.connect_serial,font=("Arial", fontsize))
@@ -67,10 +67,10 @@ class LeftFrame(tk.Frame):
         self.status_label = tk.Label(self, text="Not connected", wraplength=200,font=("Arial", fontsize))
         self.status_label.pack(pady=10)
 
-         # Create a separator line
-        separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
-        separator2.pack(fill="x", pady=5, padx=5)
-   
+        # Create a separator line
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
+
         # Create the show CSV button
         show_plot_button = tk.Button(self, text="Show Plot", command=self.show_plot,font=("Arial", fontsize))
         show_plot_button.pack(pady=10)
@@ -80,9 +80,9 @@ class LeftFrame(tk.Frame):
         show_csv_button.pack(pady=10)
 
 
-     # Create a separator line
-        separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
-        separator2.pack(fill="x", pady=5, padx=5)
+ # Create a separator line
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
    
     
       # Create the start record button
@@ -105,9 +105,9 @@ class LeftFrame(tk.Frame):
         self.test_button = tk.Button(self, text="Test Unseen Data", command=self.test_dataset_file,font=("Arial", fontsize))
         self.test_button.pack(pady=10, anchor='center')
 
-   # Create a separator line
-        separator2 = tk.Frame(self, bd=5, relief='sunken', height=10)
-        separator2.pack(fill="x", pady=5, padx=5)
+ # Create a separator line
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
    
         # Create the exit button
         exit_button = tk.Button(self, text="Exit", command=self.exit_app,font=("Arial", fontsize))

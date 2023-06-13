@@ -28,7 +28,7 @@ class RightFrame(tk.Frame):
         self.csv_listbox.visible = False
        
         # Create a listbox to display the CSV filenames
-        self.csv_listbox2 = tk.Listbox(self, height=5, font=("Arial", 10))
+        self.csv_listbox2 = tk.Listbox(self, height=5, font=("Arial", 10), width=50)
         self.csv_listbox2.visible = False
      
 # Create a text title label
@@ -57,7 +57,7 @@ class RightFrame(tk.Frame):
 
 
     def update_dataset_list(self):
-        folder_path = "respondent"  # Specify the folder path
+        folder_path = "respondenttraining"  # Specify the folder path
         folder_pathdataset = "dataset"  # Specify the folder path
         csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
 

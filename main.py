@@ -11,6 +11,7 @@ config.read('config.ini')
 port = config.get('Serial', 'port')
 baud_rate = config.getint('Serial', 'baudrate')
 filename = config.get('Serial', 'filename')
+capturecolumn = config.get('Serial', 'capturecolumn')
 
 # Create the main window
 window = tk.Tk()
@@ -26,7 +27,7 @@ right_frame = RightFrame(window)
 right_frame.grid(row=0, column=1, sticky="nsew")
 
 # Create the left frame
-left_frame = LeftFrame(window,port, baud_rate,right_frame)
+left_frame = LeftFrame(window,port, baud_rate,right_frame,capturecolumn)
 left_frame.grid(row=0, column=0, sticky="ns")
 
 # Configure the grid to expand the right column when the window is resized

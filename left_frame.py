@@ -17,15 +17,17 @@ import os
 from datetime import datetime
 
 class LeftFrame(tk.Frame):
-    def __init__(self, parent, port, baud_rate, right_frame):
+    def __init__(self, parent, port, baud_rate, right_frame,capturecolumn):
         super().__init__(parent)
         self.pack_propagate(False)
         self.config(width=150)
         self.port = port
         self.baud_rate = baud_rate
+        self.capturecolumn = capturecolumn
         self.is_capturing = False
         self.right_frame = right_frame
         self.respondent_folder = "respondent"
+        self.respondent_folderrawdata = "rawdata"
 
         # Set the fontsize
         fontsize = 10
@@ -41,7 +43,7 @@ class LeftFrame(tk.Frame):
 
         # Create the start record button
         self.setting_button = tk.Button(self, text="Settings", command=self.open_text_editor,font=("Arial", fontsize))
-        self.setting_button.pack(pady=10, anchor='center')
+        self.setting_button.pack()
  
         # Display the filename as the title in the right frame
         self.filename_label = tk.Label(self, text=f"Filename: {self.filename}", font=("Arial", 10))
@@ -53,11 +55,11 @@ class LeftFrame(tk.Frame):
 
         # Create the connect button
         self.connect_button = tk.Button(self, text="Connect/Record", command=self.connect_serial,font=("Arial", fontsize))
-        self.connect_button.pack(pady=10)
+        self.connect_button.pack(pady=3)
 
         # Create the disconnect button
         self.disconnect_button = tk.Button(self, text="Disconnect/Stop", command=self.disconnect_serial,font=("Arial", fontsize), state=tk.DISABLED)
-        self.disconnect_button.pack(pady=10)
+        self.disconnect_button.pack(pady=3)
 
         # Set initial button states
         self.connect_button.config(state=tk.NORMAL)
@@ -65,7 +67,7 @@ class LeftFrame(tk.Frame):
 
         # Create the status label
         self.status_label = tk.Label(self, text="Not connected", wraplength=200,font=("Arial", fontsize))
-        self.status_label.pack(pady=10)
+        self.status_label.pack(pady=3)
 
         # Create a separator line
         separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
@@ -73,11 +75,11 @@ class LeftFrame(tk.Frame):
 
         # Create the show CSV button
         show_plot_button = tk.Button(self, text="Show Plot", command=self.show_plot,font=("Arial", fontsize))
-        show_plot_button.pack(pady=10)
+        show_plot_button.pack(pady=3)
  
         # Create the show CSV button
         show_csv_button = tk.Button(self, text="Show Data CSV", command=self.show_csv,font=("Arial", fontsize))
-        show_csv_button.pack(pady=10)
+        show_csv_button.pack(pady=3)
 
 
  # Create a separator line
@@ -87,23 +89,23 @@ class LeftFrame(tk.Frame):
     
       # Create the start record button
         self.dataset_button = tk.Button(self, text="Create Dataset", command=self.show_dataset,font=("Arial", fontsize))
-        self.dataset_button.pack(pady=10, anchor='center')
+        self.dataset_button.pack(pady=3, anchor='center')
    
     # Create the start record button
         self.addlabel_button = tk.Button(self, text="Add Label", command=self.open_dataset_file,font=("Arial", fontsize))
-        self.addlabel_button.pack(pady=10, anchor='center')
+        self.addlabel_button.pack(pady=3, anchor='center')
  
   # Create the start record button
         self.train_button = tk.Button(self, text="Train Labeled Dataset", command=self.train_dataset_file,font=("Arial", fontsize))
-        self.train_button.pack(pady=10, anchor='center')
+        self.train_button.pack(pady=3, anchor='center')
 
   # Create the start record button
         self.unseen_button = tk.Button(self, text="Create Unseen Dataset", command=self.unseen_dataset_file,font=("Arial", fontsize))
-        self.unseen_button.pack(pady=10, anchor='center')
+        self.unseen_button.pack(pady=3, anchor='center')
 
 # Create the start record button
         self.test_button = tk.Button(self, text="Test Unseen Data", command=self.test_dataset_file,font=("Arial", fontsize))
-        self.test_button.pack(pady=10, anchor='center')
+        self.test_button.pack(pady=3, anchor='center')
 
  # Create a separator line
         separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
@@ -111,7 +113,7 @@ class LeftFrame(tk.Frame):
    
         # Create the exit button
         exit_button = tk.Button(self, text="Exit", command=self.exit_app,font=("Arial", fontsize))
-        exit_button.pack(pady=10)
+        exit_button.pack(pady=3)
   
     
         """ end 
@@ -308,7 +310,7 @@ class LeftFrame(tk.Frame):
                         os.makedirs(self.respondent_folder)
 
                     # Extract specific columns from the data
-                    columns = [7]  # Specify the column indices you want to save
+                    columns = [self.capturecolumn]  # Specify the column indices you want to save
                     data_columns = [int(data.split(',')[col])  for col in columns]  # Divide by 10000
 
                     # Prepend timestamp to the extracted columns
@@ -319,13 +321,24 @@ class LeftFrame(tk.Frame):
                     # Append the received data to the CSV file
                     csv_file_path = os.path.join(self.respondent_folder, f"{self.filename}.csv")
                     is_new_file = not os.path.exists(csv_file_path)  # Check if the file is new
-                    
+
+                   # ini untuk raw data 
+                    csv_file_pathrawdata = os.path.join(self.respondent_folderrawdata, f"{self.filename}.csv")
+                    is_new_filerawdata = not os.path.exists(csv_file_path)  # Check if the file is new
+                 
                      # Get the current number of rows in the CSV file
                     num_rows = 0
                     if not is_new_file:
                         with open(csv_file_path, "r") as csv_file:
                             reader = csv.reader(csv_file)
                             num_rows = sum(1 for _ in reader)
+
+                   # ini untuk raw data 
+                    if not is_new_filerawdata:
+                        with open(csv_file_pathrawdata, "r") as csv_file:
+                            reader = csv.reader(csv_file)
+ 
+                    
                     
                     with open(csv_file_path, "a", newline="") as csv_file:
                         writer = csv.writer(csv_file)
@@ -333,6 +346,15 @@ class LeftFrame(tk.Frame):
                             writer.writerow(["Timestamp", "Data"])  # Replace with your actual header names
                         writer.writerow([num_rows, *data_columns])
 
+                
+                   # ini untuk raw data 
+                    with open(csv_file_pathrawdata, "a", newline="") as csv_file:
+                        writer = csv.writer(csv_file)
+                        if is_new_filerawdata:  # Write the header if the file is new
+                            writer.writerow(["Data"])  # Replace with your actual header names
+                        writer.writerow([*data_columns])
+
+            
             self.master.after(1, self.capture_data)
 
 

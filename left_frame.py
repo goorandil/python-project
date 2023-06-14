@@ -111,6 +111,16 @@ class LeftFrame(tk.Frame):
         separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
         separator2.pack(fill="x", pady=3, padx=3)
    
+  # Create the start record button
+        self.test_button = tk.Button(self, text="Raw Data", command=self.show_rawdata,font=("Arial", fontsize))
+        self.test_button.pack(pady=3, anchor='center')
+
+  
+   #Create a separator line
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
+   
+  
         # Create the exit button
         exit_button = tk.Button(self, text="Exit", command=self.exit_app,font=("Arial", fontsize))
         exit_button.pack(pady=3)
@@ -127,6 +137,56 @@ class LeftFrame(tk.Frame):
         """
 
     # function Open a text editor or input field for editing configuration
+  
+     
+    def show_rawdata(self):
+        plt.switch_backend('TkAgg')  # Specify the backend
+
+        print("show_rawdata")
+        folder_pathdata = "rawdata"
+        file_selected = "normal_2menit.csv"
+        rawdata_file = os.path.join(folder_pathdata, file_selected)
+
+        # Load EEG data from CSV file
+        eeg_data = np.genfromtxt(rawdata_file, delimiter=',')
+
+        # Apply FFT to raw signal
+        fft_signal = np.fft.fft(eeg_data)
+
+        # Define frequency bands
+        lowbeta_band = [13, 16.75]
+        highbeta_band = [18, 29.75]
+
+        # Find indices corresponding to frequency bands
+        n = len(eeg_data)
+        fs = 512
+        freq = np.fft.fftfreq(n, 1/fs)  # Frequency axis
+
+        lowbeta_idx = np.where((freq >= lowbeta_band[0]) & (freq < lowbeta_band[1]))[0]
+       
+        # Set values outside frequency bands to zero
+        fft_lowbeta = fft_signal.copy()
+        fft_lowbeta[np.setdiff1d(range(n), lowbeta_idx)] = 0
+        lowbeta_signal = np.fft.ifft(fft_lowbeta)
+
+      
+        # Generate time vector
+        t = np.arange(n) / fs
+
+        # Plot the signals
+        plt.figure(figsize=(10, 6))
+
+        plt.subplot(2, 1, 1)
+        plt.plot(t, np.real(lowbeta_signal))
+        plt.xlabel('Time (s)')
+        plt.ylabel('Amplitude')
+        plt.title('Low Beta Band')
+
+        plt.tight_layout()
+        plt.show()
+
+    
+    
     def open_text_editor(self):
           
         config_editor = tk.Toplevel(self)

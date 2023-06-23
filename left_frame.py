@@ -15,6 +15,12 @@ from sklearn.metrics import accuracy_score
 import serial
 import os
 from datetime import datetime
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 
 class LeftFrame(tk.Frame):
     def __init__(self, parent, port, baud_rate, right_frame,capturecolumn):
@@ -23,7 +29,7 @@ class LeftFrame(tk.Frame):
         self.config(width=150)
         self.port = port
         self.baud_rate = baud_rate
-        self.capturecolumn = capturecolumn
+        self.capturecolumn = 7
         self.is_capturing = False
         self.right_frame = right_frame
         self.respondent_folder = "respondent"
@@ -74,7 +80,7 @@ class LeftFrame(tk.Frame):
         separator2.pack(fill="x", pady=3, padx=3)
 
         # Create the show CSV button
-        show_plot_button = tk.Button(self, text="Show Plot", command=self.show_plot,font=("Arial", fontsize))
+        show_plot_button = tk.Button(self, text="Tampil gambar", command=self.show_plot,font=("Arial", fontsize))
         show_plot_button.pack(pady=3)
  
         # Create the show CSV button
@@ -99,8 +105,12 @@ class LeftFrame(tk.Frame):
         self.train_button = tk.Button(self, text="Train Labeled Dataset", command=self.train_dataset_file,font=("Arial", fontsize))
         self.train_button.pack(pady=3, anchor='center')
 
+# Create a separator line
+        separator2 = tk.Frame(self, bd=3, relief='sunken', height=5)
+        separator2.pack(fill="x", pady=3, padx=3)
+
   # Create the start record button
-        self.unseen_button = tk.Button(self, text="Create Unseen Dataset", command=self.unseen_dataset_file,font=("Arial", fontsize))
+        self.unseen_button = tk.Button(self, text="Create Unseen Data", command=self.unseen_dataset_file,font=("Arial", fontsize))
         self.unseen_button.pack(pady=3, anchor='center')
 
 # Create the start record button
@@ -112,8 +122,8 @@ class LeftFrame(tk.Frame):
         separator2.pack(fill="x", pady=3, padx=3)
    
   # Create the start record button
-        self.test_button = tk.Button(self, text="Raw Data", command=self.show_rawdata,font=("Arial", fontsize))
-        self.test_button.pack(pady=3, anchor='center')
+        #self.test_button = tk.Button(self, text="Raw Data", command=self.show_rawdata,font=("Arial", fontsize))
+        #self.test_button.pack(pady=3, anchor='center')
 
   
    #Create a separator line
@@ -140,8 +150,6 @@ class LeftFrame(tk.Frame):
   
      
     def show_rawdata(self):
-        plt.switch_backend('TkAgg')  # Specify the backend
-
         print("show_rawdata")
         folder_pathdata = "rawdata"
         file_selected = "normal_2menit.csv"
@@ -154,8 +162,8 @@ class LeftFrame(tk.Frame):
         fft_signal = np.fft.fft(eeg_data)
 
         # Define frequency bands
-        lowbeta_band = [13, 16.75]
-        highbeta_band = [18, 29.75]
+        lowbeta_band = [13, 16.75]  # 13-16.75 Hz
+        highbeta_band = [18, 29.75]  # 18-29.75 Hz
 
         # Find indices corresponding to frequency bands
         n = len(eeg_data)
@@ -163,29 +171,38 @@ class LeftFrame(tk.Frame):
         freq = np.fft.fftfreq(n, 1/fs)  # Frequency axis
 
         lowbeta_idx = np.where((freq >= lowbeta_band[0]) & (freq < lowbeta_band[1]))[0]
-       
+        highbeta_idx = np.where((freq >= highbeta_band[0]) & (freq < highbeta_band[1]))[0]
+
         # Set values outside frequency bands to zero
         fft_lowbeta = fft_signal.copy()
         fft_lowbeta[np.setdiff1d(range(n), lowbeta_idx)] = 0
         lowbeta_signal = np.fft.ifft(fft_lowbeta)
 
-      
+        fft_highbeta = fft_signal.copy()
+        fft_highbeta[np.setdiff1d(range(n), highbeta_idx)] = 0
+        highbeta_signal = np.fft.ifft(fft_highbeta)
+
         # Generate time vector
         t = np.arange(n) / fs
 
         # Plot the signals
         plt.figure(figsize=(10, 6))
 
-        plt.subplot(2, 1, 1)
-        plt.plot(t, np.real(lowbeta_signal))
+#   plt.subplot(2, 1, 1)
+  #      plt.plot(t, eeg_data)
+   #     plt.xlabel('Time (s)')
+    #    plt.ylabel('Amplitude')
+     #   plt.title('EEG Raw Signal')
+
+      #  plt.subplot(2, 1, 2)
+        plt.plot(t, np.real(highbeta_signal))
         plt.xlabel('Time (s)')
         plt.ylabel('Amplitude')
-        plt.title('Low Beta Band')
+        plt.title('High Beta Band')
 
         plt.tight_layout()
         plt.show()
-
-    
+   
     
     def open_text_editor(self):
           
@@ -274,8 +291,13 @@ class LeftFrame(tk.Frame):
         y = data["Target"]
 
         # Split the dataset into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=15)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=60)
 
+        print('x_train')
+        print(X_train)
+        print('x_test')
+        print(X_test)
+    
         # Create an SVM classifier object
         clf = svm.SVC()
 
@@ -298,6 +320,50 @@ class LeftFrame(tk.Frame):
         self.right_frame.treeview_frame.pack_forget()
         self.right_frame.text_widget.pack_forget()
      
+        # Compute evaluation metrics
+        f1 = f1_score(y_test, y_pred, average='macro')
+        precision = precision_score(y_test, y_pred, average='macro')
+        recall = recall_score(y_test, y_pred, average='macro')
+
+        print("F1 Score:", f1)
+        print("Precision:", precision)
+        print("Recall:", recall)
+
+        self.right_frame.average_label.config(text=f"Accuracy : {accuracy}\n F1 Score : {f1}\n Precision : {precision}\n Recall : {recall}", 
+                          font=("Arial", 12), padx=10, pady=10)
+        self.right_frame.average_label.pack(side=tk.LEFT) 
+
+        # Confusion Matrix
+        #from sklearn.metrics import confusion_matrix
+
+        # Compute the confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+
+        # Get Class Labels
+        labels = clf.classes_
+        class_names = labels
+
+        # Plot confusion matrix in a beautiful manner
+        fig = plt.figure(figsize=(16, 14))
+        ax = plt.subplot()
+        sns.heatmap(cm, annot=True, ax=ax, fmt='g')  # annot=True to annotate cells
+
+        # Labels, title, and ticks
+        ax.set_xlabel('Predicted', fontsize=16)
+        ax.xaxis.set_label_position('bottom')
+        plt.xticks(rotation=90)
+        ax.xaxis.set_ticklabels(class_names, fontsize=10)
+        ax.xaxis.tick_bottom()
+
+        ax.set_ylabel('True', fontsize=16)
+        ax.yaxis.set_ticklabels(class_names, fontsize=10)
+        plt.yticks(rotation=0)
+
+        plt.title('Refined Confusion Matrix', fontsize=20)
+
+        plt.savefig('ConMat24.png')
+        plt.show()
+
 
 
     def unseen_dataset_file(self):
@@ -314,7 +380,7 @@ class LeftFrame(tk.Frame):
     # outputna akurasi
     def test_dataset_file(self):
          
-         
+
         self.right_frame.test_dataset_list()
         
         self.right_frame.plot_frame.pack_forget()
